@@ -1,0 +1,1 @@
+This model was based on Joseph Mohr's dataset "Major League Soccer Dataset" on Kaggle. Here is the link: https://www.kaggle.com/datasets/josephvm/major-league-soccer-dataset
