@@ -46,39 +46,58 @@ def bad_input_teamname(user_input, teamlist):
 
 file_path = "all_players.csv"
 players_df = pd.read_csv(file_path)
+filtered_df1 = None
+filtered_df2 = None
 
-player_or_team = input("Would you like to select two teams or two players? Type 'Player' or 'Club': ")
-player_or_team = str(player_or_team.title())
+mode = input("Type 'Player' to compare two players, 'Club' to compare two clubs, or 'Fantasy' to create and compare your own teams")
+mode = str(mode.title())
 
-team_list = players_df[player_or_team].tolist()
+if ((mode == "Player") or (mode == "Club")):
+    team_list = players_df[mode].tolist()
+    teamname1 = input("First " + mode + ": ")
 
-teamname1 = input("First " + player_or_team + ": ")
-if(player_or_team == "Club"):
-    teamname1 = teamname1.upper()
-while not bad_input_teamname(teamname1, team_list):
-    teamname1 = input("Please try again. First " + player_or_team + ": ")
+    # Getting the two clubs/players
 
-teamname2 = input("Second " + player_or_team + ": ")
-if(player_or_team == "Club"):
-    teamname1 = teamname1.upper()
-while not bad_input_teamname(teamname2, team_list):
-    teamname2 = input("Please try again. First " + player_or_team + ": ")
+    if(mode == "Club"):
+        teamname1 = teamname1.upper()
+    while not bad_input_teamname(teamname1, team_list):
+        teamname1 = input("Please try again. First " + mode + ": ")
 
-bad_input_teamname(teamname2, team_list)
+    teamname2 = input("Second " + mode + ": ")
+    if(mode == "Club"):
+        teamname1 = teamname1.upper()
+    while not bad_input_teamname(teamname2, team_list):
+        teamname2 = input("Please try again. First " + mode + ": ")
+
+    # Filtering the dataframe based on the input
+
+    filtered_df1 = (players_df[players_df[mode] == teamname1].groupby("Year", as_index = False)["G"].sum())
+    filtered_df2 = (players_df[players_df[mode] == teamname2].groupby("Year", as_index = False)["G"].sum())
 
 
-# Filtering dataframes
+elif (mode=="Fantasy"):
+    # Two lists to represent the two fantasy teams
 
-filtered_df1 = (
-    players_df[players_df[player_or_team] == teamname1]
-    .groupby("Year", as_index = False)["G"]
-    .sum()
-    )
-filtered_df2 = (
-    players_df[players_df[player_or_team] == teamname2]
-    .groupby("Year", as_index = False)["G"]
-    .sum()
-    )
+    fantasy_team1 = [None, None, None, None, None, None, None, None, None, None, None]
+    fantasy_team2 = [None, None, None, None, None, None, None, None, None, None, None]
+
+    # Adding players to the list
+
+    for i in range(11):
+        fantasy_team1[i] = input("Player " + str(i+1) + ": ")
+    print("First Team: " + str(fantasy_team1))
+
+    for i in range(11):
+        fantasy_team2[i] = input("Player " + str(i+1) + ": ")
+    print("Second Team: " + str(fantasy_team2))
+
+    # Filtering out rows of the dataframe
+
+    fantasyteam_df1 = players_df.loc[players_df['Player'].isin(fantasy_team1)]
+    fantasyteam_df2 = players_df.loc[players_df['Player'].isin(fantasy_team1)]
+
+    filtered_df1 = (fantasyteam_df1.groupby("Year", as_index = False)["G"].sum())
+    filtered_df2 = (fantasyteam_df2.groupby("Year", as_index = False)["G"].sum())
 
 # Setup of dataframes and regression models
 
